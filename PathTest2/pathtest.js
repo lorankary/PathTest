@@ -14,12 +14,20 @@ class PathTest {
     this.rows = floor(this.cnv.height / this.w);
     this.loadGrid();
     this.setButtonListeners();
-    this.path = new PathX(this, 0, 3, new Cell(this, 10,10));
+    this.path = new Path(this, this.getCell(0, 3), this.getCell(10,10));
   }
 
   run() { // called from draw()
     clear();
     this.render();
+  }
+
+  getIndex(row, col) { //takes row and column of 2D and returns index of 1D
+    return col + row * (this.cols)
+  }
+
+  getCell(row, col) {
+    return(this.grid[this.getIndex(row, col)]);
   }
 
   setButtonListeners() {
