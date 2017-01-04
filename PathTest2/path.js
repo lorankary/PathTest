@@ -84,6 +84,7 @@ class Path {
 
   }
 
+  // create a path from the startCell to the targetCell
   findPath() {
     for(let i = 0; i < this.pTest.grid.length; i++){
       this.pTest.grid[i].visited = false; // in case this is not the first path
@@ -106,8 +107,9 @@ class Path {
     var wVec = createVector(-1,0);
     var nwVec = createVector(-1,-1);
     var nwUnitVec = nwVec.copy().normalize();
-
     var tVec = this.cellVector(this.targetCell);  // vector to targetCell
+
+    // loop until the currentCell is the targetCell
     while(this.currentCell != this.targetCell) {
       var candidates = [];
       var candidateVectors = [];
@@ -115,9 +117,9 @@ class Path {
       var curVec = this.cellVector(this.currentCell);
       // unit vector from current cell to targetCell
       var curTargUnitVec = tVec.copy().sub(curVec).normalize();
-      // console.log(curTargUnitVec);
 
       // get all possible candidates and their respective vectors
+      // a candidate must not be occupied or visited
       var row = this.currentCell.row;
       var col = this.currentCell.col;
       var north = this.pTest.getCell(row + nVec.y,  col + nVec.x);
@@ -136,13 +138,8 @@ class Path {
         candidates.push(east);
         candidateVectors.push(eVec);
       }
-      // console.log(`seVec ${seVec}`);
       var southeast = this.pTest.getCell(row + seVec.y,  col + seVec.x);
-      // if(southeast){
-      //   console.log(`southeast row col visited occupied ${southeast.row} ${southeast.col} ${southeast.visited} ${southeast.occupied}`)
-      // }
       if(southeast && !southeast.occupied && !southeast.visited){
-        // console.log(`southeast ${southeast}`);
         candidates.push(southeast);
         candidateVectors.push(seUnitVec);
       }
@@ -151,14 +148,9 @@ class Path {
         candidates.push(south);
         candidateVectors.push(sVec);
       }
-      // console.log(`swVec ${swVec}`);
       var southwest = this.pTest.getCell(row + swVec.y, col + swVec.x);
-      // if(southwest){
-      //   console.log(`southeast row col visited occupied ${southwest.row} ${southwest.col} ${southwest.visited} ${southwest.occupied}`)
-      // }
 
       if(southwest && !southwest.occupied && !southwest.visited){
-        // console.log(`southwest ${southwest}`);
         candidates.push(southwest);
         candidateVectors.push(swUnitVec);
       }
@@ -174,20 +166,14 @@ class Path {
       }
       if(candidates.length) {
         // For all the candidates, find the dot product of the unit vector
-        // for the candidate and the unit vector for the direction to
-        // the target.  The result is the cosine of the angle between
-        // or cosine of similarity. A value of 1 is the most similarity
-        // and -1 the least.  We want the one that is greatest (closes to 1).
-
-        // console.log(candidates);
-        // console.log(candidateVectors);
-
+        // to the candidate and the unit vector to the targetCell
+        // from the currentCell.  The result is the cosine of the angle between them
+        // or the cosine of similarity. A value of 1 is the most similar
+        // and -1 the least.  We want the one that is greatest (closest to 1).
         var bestCandidate = candidates[0];
         var bestDP = candidateVectors[0].dot(curTargUnitVec);
-        // console.log(bestDP);
         for(let i = 1, l = candidates.length; i < l; i++){
           var dp = candidateVectors[i].dot(curTargUnitVec);
-          // console.log(dp);
           if(dp > bestDP){
             bestDP = dp;
             bestCandidate = candidates[i];
@@ -195,11 +181,17 @@ class Path {
         } // for
         this.currentCell = bestCandidate;
         this.pathCells.push(bestCandidate);
-        this.currentCell.visited = true;
+        bestCandidate.visited = true;
         console.log(`new current cell = ${bestCandidate.row}, ${bestCandidate.col}`);
       } // if(candidates.length)
-      // if(this.pathCells.length >= 3)
-      //   break;
+      else if(this.pathCells.length) {
+        this.currentCell = this.pathCells.pop();
+        console.log("back up");
+      }
+      else {
+        console.log("target is unreachable");
+        break;
+      }
     } // while
 
     console.log(this.pathCells.length)
