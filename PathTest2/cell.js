@@ -6,8 +6,7 @@ class Cell {
     this.col = c;
     this.clr = 200;
     this.occupied = false;
-//    this.neighbors = [true, true, true, true];
-//    this.setNeighbors();
+    this.visited = false;
   }
 
   render() {
@@ -21,25 +20,6 @@ class Cell {
     this.clr = c;
   }
 
-  // setNeighbors() {
-  //   // true == not occupied, false == occupied
-  //   // // check/set north
-  //   if (this.x > 0 && this.pTest.grid[this.getIndex(this.x, this.y - 1)]) {
-  //     if (this.pTest.grid[this.getIndex(this.x, this.y - 1)].occupied) this.neighbors[1] = false;
-  //   }
-  //   // check/set east
-  //   if (this.x < this.pTest.cols && this.pTest.grid[this.getIndex(this.x + 1, this.y)]) {
-  //     if (this.pTest.grid[this.getIndex(this.x + 1, this.y)].occupied) this.neighbors[1] = false;
-  //   }
-  //   //check/set south
-  //   if (this.y < this.pTest.rows && this.pTest.grid[this.getIndex(this.x, this.y + 1)]) {
-  //     if (this.pTest.grid[this.getIndex(this.x, this.y + 1)].occupied) this.neighbors[2] = false;
-  //   }
-  //   //check/set west
-  //   if (this.x < 0 && this.pTest.grid[this.getIndex(this.x - 1, this.y)]) {
-  //     if (this.pTest.grid[this.getIndex(this.x - 1, this.y)].occupied) this.neighbors[3] = false;
-  //   }
-  // }
 
 
 } //  End Cell **********************************************************
