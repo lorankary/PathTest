@@ -123,46 +123,59 @@ class Path {
       var row = this.currentCell.row;
       var col = this.currentCell.col;
       var north = this.pTest.getCell(row + nVec.y,  col + nVec.x);
+      var northeast = this.pTest.getCell(row + neVec.y,  col + neVec.x);
+      var east = this.pTest.getCell(row + eVec.y,  col + eVec.x);
+      var southeast = this.pTest.getCell(row + seVec.y,  col + seVec.x);
+      var south = this.pTest.getCell(row + sVec.y, col + sVec.x);
+      var southwest = this.pTest.getCell(row + swVec.y, col + swVec.x);
+      var west = this.pTest.getCell(row + wVec.y, col + wVec.x);
+      var northwest = this.pTest.getCell(row + nwVec.y, col + nwVec.x);
+
       if(north && !north.occupied && !north.visited){
         candidates.push(north);
         candidateVectors.push(nVec);
       }
-      var northeast = this.pTest.getCell(row + neVec.y,  col + neVec.x);
       if(northeast && !northeast.occupied && !northeast.visited){
-        candidates.push(northeast);
+        // don't cross a diagonal barrier
+        if(!(north && north.occupied && east && east.occupied)){
+          candidates.push(northeast);
         // diagonal vectors need to be normalized
-        candidateVectors.push(neUnitVec);
+          candidateVectors.push(neUnitVec);
+        }
       }
-      var east = this.pTest.getCell(row + eVec.y,  col + eVec.x);
       if(east && !east.occupied && !east.visited) {
         candidates.push(east);
         candidateVectors.push(eVec);
       }
-      var southeast = this.pTest.getCell(row + seVec.y,  col + seVec.x);
       if(southeast && !southeast.occupied && !southeast.visited){
-        candidates.push(southeast);
-        candidateVectors.push(seUnitVec);
+        // don't cross a diagonal barrier
+        if(!(east && east.occupied && south && south.occupied)){
+          candidates.push(southeast);
+          candidateVectors.push(seUnitVec);
+        }
       }
-      var south = this.pTest.getCell(row + sVec.y, col + sVec.x);
       if(south && !south.occupied && !south.visited){
         candidates.push(south);
         candidateVectors.push(sVec);
       }
-      var southwest = this.pTest.getCell(row + swVec.y, col + swVec.x);
 
       if(southwest && !southwest.occupied && !southwest.visited){
-        candidates.push(southwest);
-        candidateVectors.push(swUnitVec);
+        // don't cross a diagonal barrier
+        if(!(south && south.occupied && west && west.occupied)){
+          candidates.push(southwest);
+          candidateVectors.push(swUnitVec);
+        }
       }
-      var west = this.pTest.getCell(row + wVec.y, col + wVec.x);
       if(west && !west.occupied && !west.visited){
         candidates.push(west);
         candidateVectors.push(wVec);
       }
-      var northwest = this.pTest.getCell(row + nwVec.y, col + nwVec.x);
       if(northwest && !northwest.occupied && !northwest.visited){
-        candidates.push(northwest);
-        candidateVectors.push(nwUnitVec);
+        // don't cross a diagonal barrier
+        if(!(west && west.occupied && north && north.occupied)){
+          candidates.push(northwest);
+          candidateVectors.push(nwUnitVec);
+        }
       }
       if(candidates.length) {
         // For all the candidates, find the dot product of the unit vector
