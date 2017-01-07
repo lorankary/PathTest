@@ -87,11 +87,11 @@ class Path {
   // create a path from the startCell to the targetCell
   findPath() {
     for(let i = 0; i < this.pTest.grid.length; i++){
-      this.pTest.grid[i].visited = false; // in case this is not the first path
+      this.pTest.grid[i].setVisited(false); // in case this is not the first path
     }
     this.pathCells = [this.startCell];
     this.currentCell = this.startCell;
-    this.currentCell.visited = true;
+    this.currentCell.setVisited(true);
 
 
     // unit vectors for all the possible directions
@@ -194,7 +194,6 @@ class Path {
       }
     } // while
 
-    console.log(this.pathCells.length)
-
+    console.log(this.pathCells.length);
   } // findPath
 } // class Path

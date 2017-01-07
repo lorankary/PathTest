@@ -10,16 +10,21 @@ class Cell {
   }
 
   render() {
-    fill(this.clr);
+    push();
+    if(this.occupied)
+      fill(50);
+    else
+      fill(200);
     stroke(50);
     rect(this.col * this.pTest.w, this.row * this.pTest.w, this.pTest.w, this.pTest.w);
+    pop();
   }
 
-  setColor(c) {
-    stroke(50);
-    this.clr = c;
-  }
+  setColor(c) { this.clr = c; }
 
+  setOccupied(occupied){ this.occupied = occupied; }
+
+  setVisited(visited) { this.visited = visited; }
 
 
 } //  End Cell **********************************************************
