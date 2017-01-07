@@ -7,31 +7,14 @@ class PathTest {
     this.w = 50;
     this.cnv = createCanvas(900, 810);
     this.cnv.parent('canDiv');
-    this.cnv.mousePressed(handleCNVMousePressed);
+    this.cnv.mousePressed(this.handleCNVMousePressed.bind(this));
     background(255, 50, 0);
     this.grid = [];
     this.cols = floor(this.cnv.width / this.w);
     this.rows = floor(this.cnv.height / this.w);
     this.loadGrid();
-    this.setButtonListeners();
-    // // this.path = new PathX(this, 0, 3, new Cell(this, 10,10));
-    // // create a wall
-    // this.cellByIndex(3, 7).occupied = true;
-    // this.cellByIndex(4, 7).occupied = true;
-    // this.cellByIndex(5, 7).occupied = true;
-    // this.cellByIndex(6, 7).occupied = true;
-    // this.cellByIndex(7, 7).occupied = true;
-    // this.cellByIndex(8, 7).occupied = true;
-    // this.cellByIndex(9, 7).occupied = true;
-    // this.cellByIndex(10, 7).occupied = true;
-    // this.cellByIndex(11, 7).occupied = true;
-    // this.cellByIndex(12, 7).occupied = true;
-    //
-    // this.cellByIndex(11, 9).occupied = true;
-    // this.cellByIndex(11, 10).occupied = true;
-    // this.cellByIndex(11, 11).occupied = true;
-    // this.cellByIndex(11, 12).occupied = true;
     this.path = new Path(this, this.getCell(0, 3), this.getCell(10,10));
+    this.setButtonListeners();
   }
 
   run() { // called from draw()
@@ -44,20 +27,42 @@ class PathTest {
   }
 
   getCell(row, col) {
+    if(row < 0 || col < 0)
+      return undefined;
     return(this.grid[this.getIndex(row, col)]);
   }
 
   setButtonListeners() {
-    var b = select("#buttOne");
-    b.mouseOver(handleButtonMouesOver);
-    b.mouseOut(handleButtonMouesOut);
-    b.mousePressed(handleButtonMouesClicked);
-  }
+    var b = select("#buttOne"); // send enemy
+    b.mouseOver(this.handleButtonMouseOver);
+    b.mouseOut(this.handleButtonMouseOut);
+    b.mousePressed(this.handleButtonMouseClicked);
+    b = select("#buttTwo");   // find path
+    b.mouseOver(this.handleButtonMouseOver);
+    b.mouseOut(this.handleButtonMouseOut);
+    // for the "find path button", use an anonymous callback
+    // with the bind method.  Without bind(), when called
+    // *this* would refer to the p5.element.  But with
+    // bind(), *this* refers to the path property of the pTest instance.
+    b.mousePressed(function() {
+        this.findPath(); }.bind(this.path));
+    }
   render() { // draw game stuff
     for (let i = 0; i < this.grid.length; i++) {
       this.grid[i].render();
     }
+    // show a dot in the center of each cell on the current path
+    if(this.path && this.path.pathCells && this.path.pathCells.length){
+      push();
+      fill(0);
+      for(let i = 0; i < this.path.pathCells.length; i++){
+        let cell = this.path.pathCells[i];
+        ellipse(cell.col*this.w + this.w/2, cell.row*this.w + this.w/2, 3);
+      }
+      pop();
+    }
   }
+
 
 
 
@@ -75,29 +80,28 @@ class PathTest {
     return undefined;
   }
 
-} // end class PathTest ********************************************************
-
-function handleCNVMousePressed() {
-  let mVec = createVector(mouseX, mouseY);
-  // find the column and row mouse is on
-  // lk looks to me like r and c are reversed with regard to x and y
-  let r = floor(mVec.x / pTest.w);
-  let c = floor(mVec.y / pTest.w);
-
-  if (pTest.grid[r + c * pTest.cols] && !pTest.grid[r + c * pTest.cols].occupied) {
-    pTest.grid[r + c * pTest.cols].clr = 50;
-    pTest.grid[r + c * pTest.cols].occupied = true;
+// Let the handleCNVMousePressed callback be a prototype method
+// bound to the instance.
+// Toggle the occupied property of the clicked cell.
+  handleCNVMousePressed() {
+    let row = floor(mouseY/this.w);
+    let col = floor(mouseX/this.w);
+    let cell = this.getCell(row, col);
+    if(cell) {
+      cell.setOccupied(!cell.occupied);
+    }
   }
-}
 
-function handleButtonMouesOver() {
-  this.style('background-color', '#AA3377');
-}
 
-function handleButtonMouesOut() {
-  this.style('background-color', '#AAA');
-}
+  handleButtonMouseOver() {
+    this.style('background-color', '#AA3377');
+  }
 
-function handleButtonMouesClicked() {
-  pTest.sendEnemies = true;
-}
+  handleButtonMouseOut() {
+    this.style('background-color', '#AAA');
+  }
+
+  handleButtonMouseClicked() {
+    pTest.sendEnemies = true;
+  }
+} // end class PathTest ********************************************************
