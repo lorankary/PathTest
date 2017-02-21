@@ -10,14 +10,14 @@ class Cell {
   }
 
   render() {
-    push();
-    if(this.occupied)
-      fill(50);
+    var ctx = this.pTest.context;
+     if(this.occupied)
+      ctx.fillStyle = 'darkgray';
     else
-      fill(200);
-    stroke(50);
-    rect(this.col * this.pTest.w, this.row * this.pTest.w, this.pTest.w, this.pTest.w);
-    pop();
+      ctx.fillStyle = 'lightgray';
+    ctx.fillRect(this.col * this.pTest.w, this.row * this.pTest.w, this.pTest.w, this.pTest.w);
+    ctx.strokeStyle = 'black';    
+    ctx.strokeRect(this.col * this.pTest.w, this.row * this.pTest.w, this.pTest.w, this.pTest.w);
   }
 
   setColor(c) { this.clr = c; }

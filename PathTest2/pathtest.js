@@ -1,65 +1,70 @@
 'use strict'
 
+window.addEventListener('load', setup, false);
+
+var pathtest;   // the global game object
+const FRAME_RATE=30;
+
+function setup() {
+  pathtest = new PathTest();
+  window.setTimeout(draw, 100);    // wait 100ms for resources to load then start draw loop
+}
+
+function draw() {   // the animation loop
+    pathtest.run();
+    window.setTimeout(draw, 1000/FRAME_RATE);  // come back here every interval
+}
+
+
 // Game is the top level object and it contains the levels
 class PathTest {
   constructor() { // from setup()
     //  method calls on constructed
     this.w = 50;
-    this.cnv = createCanvas(900, 810);
-    this.cnv.parent('canDiv');
-    this.cnv.mousePressed(this.handleCNVMousePressed.bind(this));
-    background(255, 50, 0);
+    this.canvas =  document.getElementById('canvas');
+  	if (!this.canvas || !this.canvas.getContext) 
+        throw "No valid canvas found!";
+    this.context = this.canvas.getContext("2d");
+    if(!this.context)
+        throw "No valid context found!"; 
+    
+    this.canvas.addEventListener('click', this.handleCNVMousecClick.bind(this));  
     this.grid = [];
-    this.cols = floor(this.cnv.width / this.w);
-    this.rows = floor(this.cnv.height / this.w);
+    this.cols = Math.floor(this.canvas.width / this.w);
+    this.rows = Math.floor(this.canvas.height / this.w);
     this.loadGrid();
-    this.path = new Path(this, this.getCell(0, 3), this.getCell(10,10));
+    this.path = new Path(this);
     this.setButtonListeners();
   }
 
   run() { // called from draw()
-    clear();
     this.render();
   }
 
-  getIndex(row, col) { //takes row and column of 2D and returns index of 1D
-    return col + row * (this.cols)
-  }
-
-  getCell(row, col) {
-    if(row < 0 || col < 0)
-      return undefined;
-    return(this.grid[this.getIndex(row, col)]);
-  }
-
   setButtonListeners() {
-    var b = select("#buttOne"); // send enemy
-    b.mouseOver(this.handleButtonMouseOver);
-    b.mouseOut(this.handleButtonMouseOut);
-    b.mousePressed(this.handleButtonMouseClicked);
-    b = select("#buttTwo");   // find path
-    b.mouseOver(this.handleButtonMouseOver);
-    b.mouseOut(this.handleButtonMouseOut);
-    // for the "find path button", use an anonymous callback
-    // with the bind method.  Without bind(), when called
-    // *this* would refer to the p5.element.  But with
-    // bind(), *this* refers to the path property of the pTest instance.
-    b.mousePressed(function() {
-        this.findPath(); }.bind(this.path));
-    }
+    var b = document.getElementById('buttOne'); // send enemy
+    if(b) {
+        b.addEventListener('mouseover',this.handleButtonMouseOver);
+        b.addEventListener('mouseout',this.handleButtonMouseOut);
+        b.addEventListener('click', this.handleButtonMouseClicked);
+        }
+   }
+   
   render() { // draw game stuff
     for (let i = 0; i < this.grid.length; i++) {
       this.grid[i].render();
     }
     // show a dot in the center of each cell on the current path
     if(this.path && this.path.pathCells && this.path.pathCells.length){
-      push();
-      fill(0);
+      this.context.save();
+      this.context.fillStyle = 'black';
       for(let i = 0; i < this.path.pathCells.length; i++){
         let cell = this.path.pathCells[i];
-        ellipse(cell.col*this.w + this.w/2, cell.row*this.w + this.w/2, 3);
+        this.context.beginPath();
+        this.context.ellipse(cell.col*this.w + this.w/2, cell.row*this.w + this.w/2, 3,3,0,2*Math.PI, false);
+        this.context.fill();
       }
-      pop();
+      this.context.restore();
     }
   }
 
@@ -80,22 +85,23 @@ class PathTest {
 // Let the handleCNVMousePressed callback be a prototype method
 // bound to the instance.
 // Toggle the occupied property of the clicked cell.
-  handleCNVMousePressed() {
-    let row = floor(mouseY/this.w);
-    let col = floor(mouseX/this.w);
-    let cell = this.getCell(row, col);
+  handleCNVMousecClick(evt) {
+    let row = Math.floor(evt.offsetY/this.w);
+    let col = Math.floor(evt.offsetX/this.w);
+    let cell = this.cellByIndex(row, col);
     if(cell) {
       cell.setOccupied(!cell.occupied);
     }
+    this.path.findPath();   // recalculate the path
   }
 
 
   handleButtonMouseOver() {
-    this.style('background-color', '#AA3377');
+    this.style.backgroundColor = '#AA3377';
   }
 
   handleButtonMouseOut() {
-    this.style('background-color', '#AAA');
+    this.style.backgroundColor = '#AAA';
   }
 
   handleButtonMouseClicked() {
