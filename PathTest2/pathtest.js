@@ -63,9 +63,6 @@ class PathTest {
     }
   }
 
-
-
-
   loadGrid() {
     for (let row = 0; row < this.rows; row++) {
       for (let col = 0; col < this.cols; col++) {
