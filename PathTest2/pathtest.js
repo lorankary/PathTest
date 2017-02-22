@@ -35,11 +35,19 @@ class PathTest {
     this.loadGrid();
     this.path = new Path(this);
     this.setButtonListeners();
+    this.enemies = [];
   }
 
   run() { // called from draw()
     this.render();
   }
+  
+  kill(enemy) {
+    for(let i = 0; i < this.enemies.length; i++)
+        if(this.enemies[i] === enemy) {
+            this.enemies.splice(i, 1);  // kill enemy by removing from list
+            }
+    }
 
   setButtonListeners() {
     var b = document.getElementById('buttOne'); // send enemy
@@ -66,6 +74,10 @@ class PathTest {
       }
       this.context.restore();
     }
+    for(let i = 0; i < this.enemies.length; i++){
+        this.enemies[i].run();
+    }
+    
   }
 
   loadGrid() {
@@ -92,7 +104,9 @@ class PathTest {
     if(cell) {
       cell.setOccupied(!cell.occupied);
     }
+    this.enemies = [];      // delete all existing enemies
     this.path.findPath();   // recalculate the path
+    this.enemies.push(new Enemy(this, this.path, 3.0));
   }
 
 
@@ -105,6 +119,6 @@ class PathTest {
   }
 
   handleButtonMouseClicked() {
-    pTest.sendEnemies = true;
+    pathtest.enemies.push(new Enemy(pathtest, pathtest.path, 3.0));
   }
 } // end class PathTest ********************************************************

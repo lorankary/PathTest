@@ -36,6 +36,10 @@ var vector2d = function (x, y) {
             vec.vy -= vec2.vy;
             return(this);
         },
+        
+        dist: function (vec2) {
+         return(vec2.copy().sub(this).length());   
+        },
 
         // negate() method points the vector in the opposite direction.
         negate: function () {
