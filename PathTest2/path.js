@@ -61,14 +61,14 @@ class Path {
       // a candidate must not be occupied or visited
       var row = this.currentCell.row;
       var col = this.currentCell.col;
-      var north = this.pTest.cellByIndex(row + nVec.vy,  col + nVec.vx);
-      var northeast = this.pTest.cellByIndex(row + neVec.vy,  col + neVec.vx);
-      var east = this.pTest.cellByIndex(row + eVec.vy,  col + eVec.vx);
-      var southeast = this.pTest.cellByIndex(row + seVec.vy,  col + seVec.vx);
-      var south = this.pTest.cellByIndex(row + sVec.vy, col + sVec.vx);
-      var southwest = this.pTest.cellByIndex(row + swVec.vy, col + swVec.vx);
-      var west = this.pTest.cellByIndex(row + wVec.vy, col + wVec.vx);
-      var northwest = this.pTest.cellByIndex(row + nwVec.vy, col + nwVec.vx);
+      var north = this.pTest.cellByIndex(row + nVec.y,  col + nVec.x);
+      var northeast = this.pTest.cellByIndex(row + neVec.y,  col + neVec.x);
+      var east = this.pTest.cellByIndex(row + eVec.y,  col + eVec.x);
+      var southeast = this.pTest.cellByIndex(row + seVec.y,  col + seVec.x);
+      var south = this.pTest.cellByIndex(row + sVec.y, col + sVec.x);
+      var southwest = this.pTest.cellByIndex(row + swVec.y, col + swVec.x);
+      var west = this.pTest.cellByIndex(row + wVec.y, col + wVec.x);
+      var northwest = this.pTest.cellByIndex(row + nwVec.y, col + nwVec.x);
 
       if(north && !north.occupied && !north.visited){
         candidates.push(north);
