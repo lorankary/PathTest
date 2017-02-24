@@ -7,6 +7,7 @@ class Cell {
     this.clr = 200;
     this.occupied = false;
     this.visited = false;
+    this.pathIndex = 0;
   }
 
   render() {
@@ -25,6 +26,7 @@ class Cell {
   setOccupied(occupied){ this.occupied = occupied; }
 
   setVisited(visited) { this.visited = visited; }
+  setPathIndex(index) { this.pathIndex = index; }
 
 
 } //  End Cell **********************************************************

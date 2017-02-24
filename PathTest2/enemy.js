@@ -32,7 +32,6 @@ class Enemy {
     if(this.loc.dist(this.target) <= this.radius) {    // if we have reached the current target
         this.targetCell++;                  // set a new target
         if(this.targetCell == this.path.pathCells.length) {   // we have reached the end of the path
-            console.log("kill");
             this.pTest.kill(this);
             return;
             }

@@ -27,12 +27,13 @@ class Path {
   findPath() {
     for(let i = 0; i < this.pTest.grid.length; i++){
       this.pTest.grid[i].setVisited(false); // in case this is not the first path
+      this.pTest.grid[i].setPathIndex(0);
+
     }
     this.pathCells = [this.startCell];
     this.currentCell = this.startCell;
     this.currentCell.setVisited(true);
-
-
+ 
     // unit vectors for all the possible directions
     var nVec = vector2d(0,-1);
     var neVec = vector2d(1,-1);
@@ -136,8 +137,9 @@ class Path {
         bestCandidate.visited = true;
         console.log(`new current cell = ${bestCandidate.row}, ${bestCandidate.col}`);
       } // if(candidates.length)
-      else if(this.pathCells.length) {
-        this.currentCell = this.pathCells.pop();
+      else if(this.pathCells.length > 1) {
+        this.pathCells.pop();   // discard the one at the end of the path
+        this.currentCell = this.pathCells[this.pathCells.length-1]; // go back to the one before it
         console.log("back up");
       }
       else {
@@ -145,6 +147,77 @@ class Path {
         break;
       }
     } // while
+    
+    // now optimize the path by looking for shortcuts and eliminating cells on the Path
+    // that can be short-cutted.  Start at the end and work backwards looking for neighbor cells
+    // that are earlier in the path.
+    // First, give every cell in the path a Number
+    var i;
+    for( i = 0; i < this.pathCells.length; i++)
+        this.pathCells[i].pathIndex = i;
+    var i = this.pathCells.length -1;
+    var currentCell = this.pathCells[i];    // last in the Path
+    var previousCell = this.pathCells[i-1]; 
+    var lastCell = new Cell(this.pTest, -1, -1);
+    while(previousCell != this.pathCells[0]) {   // previousCell != startCell
+        // look at all neighbors
+        candidates = [];
+        north = this.pTest.cellByIndex(currentCell.row-1,  currentCell.col);
+        northeast = this.pTest.cellByIndex(currentCell.row-1,  currentCell.col + 1);
+        east = this.pTest.cellByIndex(currentCell.row ,  currentCell.col + 1);
+        southeast = this.pTest.cellByIndex(currentCell.row + 1,  currentCell.col + 1);
+        south = this.pTest.cellByIndex(currentCell.row + 1, currentCell.col);
+        southwest = this.pTest.cellByIndex(currentCell.row + 1, currentCell.col + -1);
+        west = this.pTest.cellByIndex(currentCell.row, currentCell.col -1);
+        northwest = this.pTest.cellByIndex(currentCell.row + -1, currentCell.col -1);
+        
+        // only consider neighbors who are in the path and are not blocked diagonally
+        // and are not either the next in the path or previous in the path.
+        if(north && north.pathIndex && north != previousCell && north != lastCell)
+            candidates.push(north);
+        if(northeast && northeast.pathIndex && northeast != previousCell && northeast != lastCell) {
+            if(!(north && north.occupied && east && east.occupied))
+                candidates.push(northeast);
+            }
+        if(east && east.pathIndex && east != previousCell && east != lastCell)
+            candidates.push(east);
+        if(southeast && southeast.pathIndex && southeast != previousCell && southeast != lastCell) {
+            if(!(east && east.occupied && south && south.occupied))
+                candidates.push(southeast);
+        }
+        if(south && south.pathIndex && south != previousCell && south != lastCell)
+            candidates.push(south);
+        if(southwest && southwest.pathIndex && southwest != previousCell && southwest != lastCell) {
+            if(!(south && south.occupied && west && west.occupied))
+                candidates.push(southwest);
+            }
+        if(west && west.pathIndex && west != previousCell && west != lastCell)
+            candidates.push(west);
+        if(northwest && northwest.pathIndex && northwest != previousCell && northwest != lastCell) {
+            if(!(west && west.occupied && north && north.occupied))
+                candidates.push(northwest);
+        }
+        if(candidates.length) {
+            // if there are any candidates, there must be a short cut
+            let bestCandidate = candidates[0].pathIndex;
+            for(let j = 1; j < candidates.length; j++)
+                if(candidates[j].pathIndex < bestCandidate) {
+                    bestCandidate = candidates[j].pathIndex;
+                }
+            // now we can eliminate all cells inbetween
+            var eliminated = this.pathCells.splice(bestCandidate+1, currentCell.pathIndex -1 - bestCandidate);
+            console.log("eliminated", eliminated);
+            for(let j = 0; j < eliminated.length; j++)
+                eliminated[j].pathIndex = 0;
+             i = bestCandidate;
+            }
+        else     // no shortcut candidates
+            i--;
+        lastCell = currentCell;
+        currentCell = this.pathCells[i];
+        previousCell = this.pathCells[i-1];
+    }
+    
 
     console.log(this.pathCells.length);
   } // findPath
