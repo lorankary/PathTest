@@ -62,6 +62,7 @@ class Path {
       // a candidate must not be occupied or visited
       var row = this.currentCell.row;
       var col = this.currentCell.col;
+      
       var north = this.pTest.cellByIndex(row + nVec.y,  col + nVec.x);
       var northeast = this.pTest.cellByIndex(row + neVec.y,  col + neVec.x);
       var east = this.pTest.cellByIndex(row + eVec.y,  col + eVec.x);
@@ -70,7 +71,7 @@ class Path {
       var southwest = this.pTest.cellByIndex(row + swVec.y, col + swVec.x);
       var west = this.pTest.cellByIndex(row + wVec.y, col + wVec.x);
       var northwest = this.pTest.cellByIndex(row + nwVec.y, col + nwVec.x);
-
+      
       if(north && !north.occupied && !north.visited){
         candidates.push(north);
         candidateVectors.push(nVec);
