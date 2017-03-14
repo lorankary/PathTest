@@ -3,7 +3,7 @@ class Enemy {
   constructor(pt, path, radius) {
     this.pTest = pt;
     this.path = path;
-    this.vel = 1.5;                                                 // velocity factor
+    this.vel = 3.0;                                                 // velocity factor
     this.acc = 1.0;                                                 // accel factor
     this.loc = this.path.cellVector(this.path.pathCells[0]);
     this.targetCell = 1;    // index into pathCells
@@ -29,7 +29,7 @@ class Enemy {
 
   update() {
 
-    if(this.loc.dist(this.target) <= this.radius) {    // if we have reached the current target
+    if(this.loc.dist(this.target) <= this.radius*4) {    // if we have reached the current target
         this.targetCell++;                  // set a new target
         if(this.targetCell == this.path.pathCells.length) {   // we have reached the end of the path
             this.pTest.kill(this);
@@ -47,7 +47,7 @@ class Enemy {
             angleBetween = angleBetween = angleBetween + 2*Math.PI;  // make positive and < 180 degrees
             
         // now rotate the current velocity in the direction of the targetAngle
-        this.velVec.rotate(angleBetween)
+        this.velVec.rotate(angleBetween/10)
         } 
     this.loc.add(this.velVec);          // apply velocity to location
   }
